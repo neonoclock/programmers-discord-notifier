@@ -8,7 +8,18 @@ import {
   saveSettings,
   getLogs,
 } from '../lib/storage/settings';
-import type { RuntimeMessage, RuntimeResponse, SubmissionEvent } from '../lib/types';
+import type { ExtensionSettings, RuntimeMessage, RuntimeResponse, SubmissionEvent } from '../lib/types';
+
+let cachedSettings: ExtensionSettings | null = null;
+
+async function getCachedSettings(): Promise<ExtensionSettings> {
+  if (!cachedSettings) cachedSettings = await getSettings();
+  return cachedSettings;
+}
+
+function invalidateCache() {
+  cachedSettings = null;
+}
 
 export default defineBackground(() => {
   chrome.runtime.onMessage.addListener(
@@ -16,7 +27,7 @@ export default defineBackground(() => {
       handleMessage(message)
         .then((res) => sendResponse(res))
         .catch((err) => sendResponse({ ok: false, error: String(err) }));
-      return true; // 비동기 sendResponse 유지
+      return true;
     },
   );
 });
@@ -28,10 +39,11 @@ async function handleMessage(message: RuntimeMessage): Promise<RuntimeResponse> 
       return { ok: true };
 
     case 'GET_SETTINGS':
-      return { ok: true, data: await getSettings() };
+      return { ok: true, data: await getCachedSettings() };
 
     case 'SAVE_SETTINGS':
       await saveSettings(message.payload);
+      invalidateCache();
       return { ok: true };
 
     case 'GET_LOGS':
@@ -47,7 +59,7 @@ async function handleMessage(message: RuntimeMessage): Promise<RuntimeResponse> 
 }
 
 async function handleSubmission(event: SubmissionEvent): Promise<void> {
-  const settings = await getSettings();
+  const settings = await getCachedSettings();
 
   if (!settings.enabled) return;
   if (!settings.webhookUrl) return;
