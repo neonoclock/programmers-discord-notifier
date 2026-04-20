@@ -11,10 +11,6 @@ export type SubmissionEvent = {
   result: SubmissionResult;
   rawStatus?: string;
   source: 'fetch' | 'xhr' | 'dom';
-  memory?: number;       // KB
-  time?: number;         // ms
-  attemptCount?: number;
-  codeLength?: number;
 };
 
 export type ExtensionSettings = {
@@ -32,17 +28,6 @@ export type DeliveryLog = {
   problemTitle?: string;
   result: SubmissionResult;
   errorMessage?: string;
-};
-
-// window.postMessage 페이로드 타입
-export type InjectedMessage = {
-  source: 'programmers-hook';
-  type: 'SUBMISSION_DETECTED';
-  payload: {
-    url: string;
-    responseBody: unknown;
-    detectedAt: number;
-  };
 };
 
 // content → background 메시지 타입

@@ -13,7 +13,7 @@ export default defineConfig({
       '48': 'icon-48.png',
       '128': 'icon-128.png',
     },
-    permissions: ['storage', 'scripting'],
+    permissions: ['storage'],
     host_permissions: [
       'https://school.programmers.co.kr/*',
       'https://programmers.co.kr/*',
