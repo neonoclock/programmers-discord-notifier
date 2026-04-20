@@ -18,9 +18,8 @@ function watchResultModal(ctx: { onInvalidated: (cb: () => void) => void }) {
   let lastSentTitle = '';
   let lastSentAt = 0;
 
-  const observer = new MutationObserver(() => {
-    const modal = document.querySelector('#modal-dialog');
-    if (!modal?.classList.contains('show')) return;
+  function handleModalChange(modal: Element) {
+    if (!modal.classList.contains('show')) return;
 
     const titleEl = modal.querySelector('h4.modal-title');
     if (!titleEl?.textContent) return;
@@ -55,14 +54,37 @@ function watchResultModal(ctx: { onInvalidated: (cb: () => void) => void }) {
     } catch {
       // 컨텍스트 무효화 시 무시
     }
+  }
+
+  // #modal-dialog가 이미 있으면 바로 감시, 없으면 body에서 찾을 때까지 대기
+  function attachModalObserver(modal: Element): MutationObserver {
+    const obs = new MutationObserver(() => handleModalChange(modal));
+    obs.observe(modal, { attributes: true, attributeFilter: ['class'] });
+    return obs;
+  }
+
+  let modalObserver: MutationObserver | null = null;
+
+  const existingModal = document.querySelector('#modal-dialog');
+  if (existingModal) {
+    modalObserver = attachModalObserver(existingModal);
+  }
+
+  // 모달이 아직 없으면 body를 잠깐 감시하다 발견하면 전환
+  const bodyObserver = new MutationObserver(() => {
+    if (modalObserver) return;
+    const modal = document.querySelector('#modal-dialog');
+    if (!modal) return;
+    modalObserver = attachModalObserver(modal);
+    bodyObserver.disconnect();
   });
 
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ['class'],
-  });
+  if (!existingModal) {
+    bodyObserver.observe(document.body, { childList: true, subtree: true });
+  }
 
-  ctx.onInvalidated(() => observer.disconnect());
+  ctx.onInvalidated(() => {
+    modalObserver?.disconnect();
+    bodyObserver.disconnect();
+  });
 }
