@@ -29,6 +29,9 @@ export function getProblemTitle(): string | undefined {
 }
 
 export function getSelectedLanguage(): string | undefined {
+  const langParam = new URLSearchParams(location.search).get('language');
+  if (langParam) return langParam;
+
   const selectors = [
     'select[name="language"] option:checked',
     '.language-select option:checked',
@@ -39,10 +42,6 @@ export function getSelectedLanguage(): string | undefined {
     const text = document.querySelector(sel)?.textContent?.trim();
     if (text) return text;
   }
-
-  // URL 파라미터에서 시도
-  const langParam = new URLSearchParams(location.search).get('language');
-  return langParam ?? undefined;
 }
 
 export function getProblemLevel(): string | undefined {
