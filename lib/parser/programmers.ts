@@ -61,6 +61,30 @@ export function parseResultFromModalTitle(title: string): SubmissionResult {
   return 'unknown';
 }
 
+export type SubmissionMeta = {
+  memory?: number;
+  time?: number;
+  attemptCount?: number;
+  codeLength?: number;
+  language?: string;
+};
+
+// 응답 JSON에서 성능/메타 데이터 파싱
+export function parseMetaFromResponse(body: unknown): SubmissionMeta {
+  if (typeof body !== 'object' || body === null) return {};
+  const b = body as Record<string, unknown>;
+
+  const toNum = (v: unknown) => (typeof v === 'number' ? v : typeof v === 'string' ? parseFloat(v) : undefined);
+
+  return {
+    memory: toNum(b['memory'] ?? b['memory_limit'] ?? b['used_memory']),
+    time: toNum(b['time'] ?? b['elapsed_time'] ?? b['time_limit'] ?? b['run_time']),
+    attemptCount: toNum(b['count'] ?? b['submit_count'] ?? b['attempt_count']),
+    codeLength: toNum(b['code_length'] ?? b['length'] ?? b['code_size']),
+    language: typeof b['language'] === 'string' ? b['language'] : undefined,
+  };
+}
+
 // URL에서 문제 ID 추출
 export function parseProblemId(url: string): string | undefined {
   const match = url.match(/\/challenges\/(\d+)/) ?? url.match(/\/lessons\/(\d+)/);

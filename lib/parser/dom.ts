@@ -7,6 +7,9 @@ export function getProblemTitle(): string | undefined {
     '[data-testid="problem-title"]',
     '.challenge-info-title h1',
     '.lesson-content h1',
+    '.algorithm-title',
+    'h3.title',
+    'h2.title',
     'h1',
   ];
 
@@ -14,6 +17,14 @@ export function getProblemTitle(): string | undefined {
     const text = document.querySelector(sel)?.textContent?.trim();
     if (text) return text;
   }
+
+  // document.title 에서 파싱 (예: "문제 제목 | 프로그래머스 스쿨")
+  const titleParts = document.title.split('|');
+  if (titleParts.length >= 2) {
+    const candidate = titleParts[0].trim();
+    if (candidate) return candidate;
+  }
+
   return undefined;
 }
 

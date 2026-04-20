@@ -9,13 +9,12 @@ export default defineContentScript({
   ],
   runAt: 'document_idle',
 
-  async main() {
-    watchResultModal();
+  async main(ctx) {
+    watchResultModal(ctx);
   },
 });
 
-function watchResultModal() {
-  // 같은 모달을 여러 번 전송하지 않기 위한 플래그
+function watchResultModal(ctx: { onInvalidated: (cb: () => void) => void }) {
   let lastSentTitle = '';
   let lastSentAt = 0;
 
@@ -30,7 +29,6 @@ function watchResultModal() {
     const result = parseResultFromModalTitle(titleText);
     if (result === 'unknown') return;
 
-    // 같은 텍스트가 5초 안에 또 오면 무시 (MutationObserver 중복 방지)
     const now = Date.now();
     if (titleText === lastSentTitle && now - lastSentAt < 5000) return;
 
@@ -52,7 +50,11 @@ function watchResultModal() {
       source: 'dom',
     };
 
-    chrome.runtime.sendMessage({ type: 'SUBMISSION_EVENT', payload: event });
+    try {
+      chrome.runtime.sendMessage({ type: 'SUBMISSION_EVENT', payload: event });
+    } catch {
+      // 컨텍스트 무효화 시 무시
+    }
   });
 
   observer.observe(document.body, {
@@ -61,4 +63,6 @@ function watchResultModal() {
     attributes: true,
     attributeFilter: ['class'],
   });
+
+  ctx.onInvalidated(() => observer.disconnect());
 }

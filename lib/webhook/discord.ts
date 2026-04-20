@@ -24,7 +24,8 @@ const COLOR = {
 function buildEmbed(event: SubmissionEvent, settings: ExtensionSettings): DiscordEmbed {
   const isSuccess = event.result === 'success';
   const resultLabel = isSuccess ? '✅ 통과' : event.result === 'fail' ? '❌ 실패' : '❓ 알 수 없음';
-  const title = `${resultLabel} — ${event.problemTitle ?? '제목 미확인'}`;
+  const titleFallback = event.problemId ? `#${event.problemId}` : '제목 미확인';
+  const title = `${resultLabel} — ${event.problemTitle ?? titleFallback}`;
 
   const fields: DiscordEmbed['fields'] = [
     { name: '플랫폼', value: 'Programmers', inline: true },
@@ -41,7 +42,7 @@ function buildEmbed(event: SubmissionEvent, settings: ExtensionSettings): Discor
     fields,
     url: settings.includeProblemLink ? event.url : undefined,
     timestamp: new Date(event.detectedAt).toISOString(),
-    footer: { text: 'Programmers Discord Notifier' },
+    footer: { text: 'Programmers Notifier' },
   };
 }
 
@@ -78,7 +79,7 @@ export async function testWebhook(webhookUrl: string): Promise<void> {
         color: COLOR.success,
         fields: [],
         timestamp: new Date().toISOString(),
-        footer: { text: 'Programmers Discord Notifier' },
+        footer: { text: 'Programmers Notifier' },
       },
     ],
   };

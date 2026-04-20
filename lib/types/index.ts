@@ -11,6 +11,10 @@ export type SubmissionEvent = {
   result: SubmissionResult;
   rawStatus?: string;
   source: 'fetch' | 'xhr' | 'dom';
+  memory?: number;       // KB
+  time?: number;         // ms
+  attemptCount?: number;
+  codeLength?: number;
 };
 
 export type ExtensionSettings = {
