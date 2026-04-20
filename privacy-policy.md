@@ -1,3 +1,8 @@
+---
+layout: default
+title: Privacy Policy
+---
+
 # Privacy Policy — Programmers Notifier
 
 Last updated: 2026-04-20
