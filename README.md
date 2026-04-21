@@ -9,6 +9,12 @@
   <br>
   <br>
   <br>
+  <a href="https://chromewebstore.google.com/detail/programmers-notifier/olbpafoagcnpihnbdadjbinhkhimgfjg">
+    <img src="https://img.shields.io/chrome-web-store/v/olbpafoagcnpihnbdadjbinhkhimgfjg.svg" alt="chrome-webstore"/>
+  </a>
+  <a href="https://chromewebstore.google.com/detail/programmers-notifier/olbpafoagcnpihnbdadjbinhkhimgfjg">
+    <img src="https://img.shields.io/chrome-web-store/d/olbpafoagcnpihnbdadjbinhkhimgfjg.svg" alt="users"/>
+  </a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="license"/></a>
   <a href="https://github.com/neonoclock/programmers-discord-notifier"><img src="https://img.shields.io/github/stars/neonoclock/programmers-discord-notifier?style=social" alt="stars"/></a>
 </p>
@@ -19,7 +25,6 @@
 - [사용 방법](#사용-방법)
 - [1. 일반 사용자](#1-일반-사용자)
 - [2. 디스코드 서버 관리자](#2-디스코드-서버-관리자)
-- [Contributors](#contributors)
 
 <br />
 
@@ -27,6 +32,7 @@
 
 - **Programmers Notifier**는 프로그래머스에서 코드를 제출하면 채점 결과를 디스코드로 자동 전송하는 Chrome 확장 프로그램입니다.
 - 핵심 기능은 프로그래머스 제출 결과를 웹훅을 통해 디스코드 서버로 자동 공유하는 것입니다.
+- 알고리즘 스터디 그룹이나 동아리에서 문제 풀이 과정을 함께 공유하는 데 유용합니다.
 
 <br />
 
@@ -39,10 +45,13 @@
 
 ## 1. 일반 사용자
 
-**1. 확장 프로그램을 설치해주세요.**
+**1. Chrome 웹 스토어에서 확장 프로그램을 설치해주세요.**
 
-아직 웹 스토어에 등록되지 않은 경우, 아래 개발 빌드 방법을 참고해 직접 설치할 수 있습니다.
+<a href="https://chromewebstore.google.com/detail/programmers-notifier/olbpafoagcnpihnbdadjbinhkhimgfjg">
+  <img src="https://img.shields.io/badge/Chrome_Web_Store-설치하기-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Install"/>
+</a>
 
+<br />
 <br />
 
 **2. 확장 프로그램 아이콘을 클릭해 설정을 완료하세요.**
@@ -83,13 +92,4 @@
 > 디스코드 웹훅은 URL만으로 해당 채널에 메시지를 전송할 수 있습니다.
 > 반드시 신뢰할 수 있는 팀원과만 공유하며, **외부에 노출되지 않도록 각별히 주의하세요.**
 
-<br />
-
-## Contributors
-
-<a href='https://github.com/neonoclock/programmers-discord-notifier/graphs/contributors'>
-  <img src='https://contrib.rocks/image?repo=neonoclock/programmers-discord-notifier'>
-</a>
-
-<br />
 <br />
