@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { DeliveryLog, ExtensionSettings } from '../../lib/types';
 import { DEFAULT_SETTINGS } from '../../lib/storage/settings';
 
 export default function App() {
   const [settings, setSettings] = useState<ExtensionSettings>(DEFAULT_SETTINGS);
+  const settingsRef = useRef<ExtensionSettings>(DEFAULT_SETTINGS);
   const [logs, setLogs] = useState<DeliveryLog[]>([]);
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
@@ -13,16 +14,40 @@ export default function App() {
       chrome.runtime.sendMessage({ type: 'GET_SETTINGS' }),
       chrome.runtime.sendMessage({ type: 'GET_LOGS' }),
     ]).then(([settingsRes, logsRes]) => {
-      if (settingsRes.ok) setSettings(settingsRes.data as ExtensionSettings);
+      if (settingsRes.ok) {
+        const loadedSettings = settingsRes.data as ExtensionSettings;
+        settingsRef.current = loadedSettings;
+        setSettings(loadedSettings);
+      }
       if (logsRes.ok) setLogs(logsRes.data as DeliveryLog[]);
       setLoading(false);
     });
   }, []);
 
   async function save() {
-    const res = await chrome.runtime.sendMessage({ type: 'SAVE_SETTINGS', payload: settings });
+    settingsRef.current = settings;
+    const res = await chrome.runtime.sendMessage({
+      type: 'SAVE_SETTINGS',
+      payload: settingsRef.current,
+    });
     setStatus(res.ok ? '저장되었습니다' : `오류: ${res.error}`);
     setTimeout(() => setStatus(''), 2000);
+  }
+
+  async function updateAndSaveSettings(patch: Partial<ExtensionSettings>) {
+    const nextSettings = { ...settingsRef.current, ...patch };
+    settingsRef.current = nextSettings;
+    setSettings(nextSettings);
+
+    const res = await chrome.runtime.sendMessage({
+      type: 'SAVE_SETTINGS',
+      payload: nextSettings,
+    });
+
+    if (!res.ok) {
+      setStatus(`오류: ${res.error}`);
+      setTimeout(() => setStatus(''), 3000);
+    }
   }
 
   async function testWebhook() {
@@ -46,7 +71,7 @@ export default function App() {
         <input
           type="checkbox"
           checked={settings.enabled}
-          onChange={(e) => setSettings({ ...settings, enabled: e.target.checked })}
+          onChange={(e) => updateAndSaveSettings({ enabled: e.target.checked })}
         />
       </label>
 
@@ -75,7 +100,7 @@ export default function App() {
         <input
           type="checkbox"
           checked={settings.sendOnlySuccess}
-          onChange={(e) => setSettings({ ...settings, sendOnlySuccess: e.target.checked })}
+          onChange={(e) => updateAndSaveSettings({ sendOnlySuccess: e.target.checked })}
         />
       </label>
 
@@ -84,7 +109,7 @@ export default function App() {
         <input
           type="checkbox"
           checked={settings.includeProblemLink}
-          onChange={(e) => setSettings({ ...settings, includeProblemLink: e.target.checked })}
+          onChange={(e) => updateAndSaveSettings({ includeProblemLink: e.target.checked })}
         />
       </label>
 
